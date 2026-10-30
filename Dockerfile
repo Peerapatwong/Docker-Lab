@@ -4,6 +4,10 @@
 # Builder stage — installs production dependencies only, on a fresh Node base.
 # =============================================================================
 
+FROM debian:12-slim
+# Or pull the latest point release / security patches
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 # TODO(step-4a): set the builder base image as node:20.11-slim and name the stage "builder".
 FROM node:20.11-slim AS builder
 #   Do NOT use `node:latest` — we want reproducible builds across the cohort.
