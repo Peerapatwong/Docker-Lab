@@ -24,7 +24,12 @@ jobs:
 
       # TODO(step-6b): build the image locally with tag $IMAGE_NAME:${{ github.sha }}.
       - name: Build image
-        run: $IMAGE_NAME:${{ github.sha }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          load: true # Loads the built image into the local Docker daemon so Trivy can scan it
 
       # scan the freshly built image with Trivy. Fail the job on CRITICAL.
       - name: Scan image with Trivy
@@ -47,7 +52,7 @@ jobs:
       - name: Tag and push
         run: |
             FULL=${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME
-            docker ??? $IMAGE_NAME:${{ github.sha }} $FULL:${{ github.sha }}
-            docker ??? $IMAGE_NAME:${{ github.sha }} $FULL:latest
-            docker ??? $FULL:${{ github.sha }}
-            docker ??? $FULL:latest
+            docker tag $IMAGE_NAME:${{ github.sha }} $FULL:${{ github.sha }}
+            docker tag $IMAGE_NAME:${{ github.sha }} $FULL:latest
+            docker push $FULL:${{ github.sha }}
+            docker push $FULL:latest
